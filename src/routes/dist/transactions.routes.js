@@ -40,7 +40,7 @@ var express_1 = require("express");
 var typeorm_1 = require("typeorm");
 var TransactionsRepository_1 = require("../repositories/TransactionsRepository");
 var CreateTransactionService_1 = require("../services/CreateTransactionService");
-// import DeleteTransactionService from '../services/DeleteTransactionService';
+var DeleteTransactionService_1 = require("../services/DeleteTransactionService");
 // import ImportTransactionsService from '../services/ImportTransactionsService';
 var transactionsRouter = express_1.Router();
 transactionsRouter.get('/', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
@@ -91,8 +91,17 @@ transactionsRouter.post('/', function (request, response) { return __awaiter(voi
     });
 }); });
 transactionsRouter["delete"]('/:id', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var id, deleteTransactionService;
     return __generator(this, function (_a) {
-        return [2 /*return*/];
+        switch (_a.label) {
+            case 0:
+                id = request.params.id;
+                deleteTransactionService = new DeleteTransactionService_1["default"]();
+                return [4 /*yield*/, deleteTransactionService.execute({ id: id })];
+            case 1:
+                _a.sent();
+                return [2 /*return*/, response.status(204).send()];
+        }
     });
 }); });
 transactionsRouter.post('/import', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
