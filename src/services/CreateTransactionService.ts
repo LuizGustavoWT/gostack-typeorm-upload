@@ -1,5 +1,5 @@
-import { getRepository } from 'typeorm';
-// import AppError from '../errors/AppError';
+import { getCustomRepository, getRepository } from 'typeorm';
+import AppError from '../errors/AppError';
 import Category from '../models/Category';
 
 import Transaction from '../models/Transaction';
@@ -20,11 +20,13 @@ class CreateTransactionService {
     type,
     category,
   }: Request): Promise<Transaction> {
-    const transactionRepository = new TransactionsRepository();
+    const transactionRepository = getCustomRepository(TransactionsRepository);
     const categoryRepository = getRepository(Category);
     let transactionCategory = await categoryRepository.findOne({
       where: { title: category },
     });
+
+    const balance = await transactionRepository.getBalance();
 
     if (!transactionCategory) {
       transactionCategory = categoryRepository.create({
@@ -32,6 +34,10 @@ class CreateTransactionService {
       });
 
       await categoryRepository.save(transactionCategory);
+    }
+
+    if (balance.total < value && type === 'outcome') {
+      throw new AppError('Você Não tem saldo para esta operração', 400);
     }
 
     const transaction = transactionRepository.create({
