@@ -38,10 +38,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var express_1 = require("express");
 var typeorm_1 = require("typeorm");
+var multer_1 = require("multer");
 var TransactionsRepository_1 = require("../repositories/TransactionsRepository");
 var CreateTransactionService_1 = require("../services/CreateTransactionService");
 var DeleteTransactionService_1 = require("../services/DeleteTransactionService");
-// import ImportTransactionsService from '../services/ImportTransactionsService';
+var ImportTransactionsService_1 = require("../services/ImportTransactionsService");
+var upload_1 = require("../configs/upload");
+var upload = multer_1["default"](upload_1["default"]);
 var transactionsRouter = express_1.Router();
 transactionsRouter.get('/', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
     var transactionRepository, transactions, balance;
@@ -104,9 +107,17 @@ transactionsRouter["delete"]('/:id', function (request, response) { return __awa
         }
     });
 }); });
-transactionsRouter.post('/import', function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+transactionsRouter.post('/import', upload.single('file'), function (request, response) { return __awaiter(void 0, void 0, void 0, function () {
+    var importTransaction, transactions;
     return __generator(this, function (_a) {
-        return [2 /*return*/];
+        switch (_a.label) {
+            case 0:
+                importTransaction = new ImportTransactionsService_1["default"]();
+                return [4 /*yield*/, importTransaction.execute(request.file.path)];
+            case 1:
+                transactions = _a.sent();
+                return [2 /*return*/, response.json(transactions)];
+        }
     });
 }); });
 exports["default"] = transactionsRouter;
